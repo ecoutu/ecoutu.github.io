@@ -45,8 +45,27 @@ Emma Coutu's blog: Astro + the AstroPaper theme, deployed to GitHub Pages at htt
   - `gh pr merge --rebase`: every commit on the branch must be a Conventional Commit.
 - Use `--force-with-lease` for force pushes, never plain `--force`. Never force-push `main`.
 
+## Issues, milestones and the project board
+Work is tracked on the **Blog** project board (https://github.com/users/ecoutu/projects/4), with milestones `Launch` and `Growth`.
+- **Site changes start with an issue.** Any change to code, config, CI, dependencies or design gets an issue *before* its branch or PR: one PR = one issue. Check `gh issue list` first and reuse an existing issue rather than opening a duplicate.
+- **Posts are exempt.** A `feat(posts)` / `fix(posts)` PR that only touches `src/content/posts/` or post media needs no issue. A planned post may still have an issue labelled `post`, as a backlog idea; if it does, close it from the PR. Renovate and release PRs are exempt too.
+- An issue is assigned to `ecoutu`, put on the matching milestone, and labelled: `bug` for fixes, `enhancement` for features, `post`, or `chore` / `ci` / `documentation` / `idea` as fits. When work starts, make sure it's assigned (`gh issue edit N --add-assignee ecoutu`).
+- The PR is assigned to `ecoutu` (`--assignee ecoutu`), has the same milestone, and links the issue in its body with `Closes #N`. Never write close/fix/resolve #N unless the PR should close it; use `Refs #N` otherwise.
+- **Branch names:** `<type>/<issue number>[-short-suffix]`, where the type matches the Conventional Commit type: `fix/12`, `feat/12-analytics`, `ci/8-project-board`. Post branches without an issue use `<type>/posts-<slug>`, for example `feat/posts-introducing-tabchef`.
+- **Never rename a PR's head branch on GitHub.** That closes every open PR using it as its head. Name the branch right at creation; to rename later, open a new PR from a new branch and close the old one with a link.
+- Relationships:
+  - A change that takes more than one PR gets a parent issue with one sub-issue per PR: `gh api -X POST repos/ecoutu/ecoutu.github.io/issues/<parent>/sub_issues -F sub_issue_id=<child .id>`.
+  - Ordering dependencies, including stacked PRs: `gh api -X POST repos/ecoutu/ecoutu.github.io/issues/<blocked>/dependencies/blocked_by -F issue_id=<blocker .id>`.
+  - Both APIs take the issue's numeric `.id` (`gh api repos/ecoutu/ecoutu.github.io/issues/N -q .id`), not its number.
+- `.github/workflows/project-board.yml` adds new issues and PRs to the board and moves Status:
+  - issues start in Backlog, draft PRs in In progress, ready PRs in In review;
+  - closed or merged items move to Done;
+  - a PR without a milestone takes the milestone of the issue it closes.
+  - Move an issue to Next or In progress by hand when you pick it up.
+- Before merging, re-read the PR's test plan and tick only what has really been verified. Show the user any unticked box and wait.
+
 ## Never commit
-`MEMORY.md`, `docs/superpowers/**`. These are local only and listed in `.git/info/exclude`.
+`MEMORY.md`, `docs/superpowers/**`. These are local only and listed in `.git/info/exclude`. The `/handoff-mnext` and `/resume-mnext` skills and the SessionStart hook in `.claude/` are local too.
 
 ## Before committing
 Run the scripts from `package.json`: `npm run lint`, `npm run format:check`, `npm run build` (which includes `astro check`). The `pre-push` hook runs lint, the format check and `astro check`. Never guess other commands.
