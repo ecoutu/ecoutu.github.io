@@ -26,6 +26,20 @@
       "before 6am on the first day of the month"
     ]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "gitleaks in the Secrets workflow: the release tag and its tarball's sha256, updated together",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/secrets\\.yml$/"
+      ],
+      "matchStrings": [
+        "GITLEAKS_VERSION: (?<currentValue>v\\S+)\\n\\s*GITLEAKS_SHA256: (?<currentDigest>[0-9a-f]{64})"
+      ],
+      "depNameTemplate": "gitleaks/gitleaks",
+      "datasourceTemplate": "github-release-attachments"
+    }
+  ],
   "packageRules": [
     {
       "description": "Low-risk dev tooling, grouped",
