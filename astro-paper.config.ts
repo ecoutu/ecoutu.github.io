@@ -7,7 +7,6 @@ export default defineAstroPaperConfig({
     description: "Notes on software, tooling, and side projects.",
     author: "Emma Coutu",
     profile: "https://github.com/ecoutu",
-    ogImage: "default-og.jpg",
     lang: "en",
     timezone: "America/Edmonton",
     dir: "ltr",
