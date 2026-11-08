@@ -13,7 +13,8 @@
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.5",
@@ -34,17 +35,25 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
     "@pagefind/default-ui": "^1.6.0",
+    "@semantic-release/changelog": "7.0.0",
+    "@semantic-release/git": "11.0.1",
+    "@semantic-release/github": "12.0.10",
+    "@semantic-release/npm": "13.2.0",
     "@shikijs/transformers": "^4.6.0",
     "@tailwindcss/typography": "^0.5.20",
     "@types/lodash.kebabcase": "^4.1.9",
     "@typescript-eslint/parser": "^8.72.1",
     "eslint": "^10.14.0",
     "eslint-plugin-astro": "^3.2.1",
+    "husky": "9.1.7",
     "pagefind": "^1.6.0",
     "prettier": "3.9.10",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "semantic-release": "25.0.9",
     "typescript": "^6.0.3"
   }
 }

@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+# One release at a time; never cancel a release that is mid-flight.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    # The release commit carries [skip ci]; guard here too so it can never re-trigger a release.
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
