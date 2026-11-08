@@ -24,6 +24,7 @@ npm run format
 - On every push to `main`, `.github/workflows/release.yml` runs CI and then semantic-release. It bumps the version, updates `CHANGELOG.md` and creates a GitHub release. `feat` makes a minor release, `fix`/`perf` a patch, and `!` or `BREAKING CHANGE` a major one.
 - Renovate keeps dependencies up to date with `chore(deps)` commits (`renovate.json`).
 - The release job needs a token that can bypass the `protect-main` ruleset: the `PROJECT_TOKEN` secret, or `RELEASE_APP_ID` + `RELEASE_APP_PRIVATE_KEY`.
+- `secrets.yml` scans every branch with gitleaks (`.gitleaks.toml`).
 
 ## Site
 
