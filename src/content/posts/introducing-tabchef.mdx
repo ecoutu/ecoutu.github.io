@@ -1,0 +1,33 @@
+---
+title: Introducing Tabchef
+description: A Chrome extension that auto-groups and dedupes your tabs.
+pubDatetime: 2026-11-08T12:00:00Z
+featured: true
+tags: [tabchef, announcements]
+draft: true
+---
+
+Tabchef is a Chrome extension that keeps your tabs organized: it auto-groups tabs by rule and removes duplicates.
+
+## Demo
+
+<video controls muted playsinline width="100%" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+
+*(Placeholder CC0 video. Swap in the real tabchef screen recording.)*
+
+## A grouping rule
+
+```ts
+const rule: GroupRule = {
+  name: "Docs",
+  match: { hostRegex: "^(docs|developer)\\." },
+  color: "blue",
+};
+```
+
+## What's next
+
+- [ ] Sync rules across devices
+- [ ] Per-window rule sets
+
+> Comparison post: identical content in AstroPaper and Blowfish.

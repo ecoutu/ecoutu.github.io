@@ -1,0 +1,59 @@
+---
+// Giscus comments, stored as GitHub Discussions on the blog repo.
+// Values from https://giscus.app — requires the giscus GitHub App on the repo.
+const giscus = {
+  repo: "ecoutu/ecoutu.github.io",
+  "repo-id": "R_kgDOVnTOxA",
+  category: "Announcements",
+  "category-id": "DIC_kwDOVnTOxM4DKrE1",
+  mapping: "pathname",
+  strict: "0",
+  "reactions-enabled": "1",
+  "emit-metadata": "0",
+  "input-position": "bottom",
+  lang: "en",
+  loading: "lazy",
+};
+---
+
+<section id="comments" class="mt-8" data-giscus={JSON.stringify(giscus)}>
+</section>
+
+<script>
+  const GISCUS_ORIGIN = "https://giscus.app";
+
+  function giscusTheme() {
+    return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  }
+
+  function mountComments() {
+    const host = document.getElementById("comments");
+    if (!host?.dataset.giscus || host.querySelector("script, iframe")) return;
+
+    const script = document.createElement("script");
+    script.src = `${GISCUS_ORIGIN}/client.js`;
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    for (const [key, value] of Object.entries(
+      JSON.parse(host.dataset.giscus) as Record<string, string>
+    )) {
+      script.setAttribute(`data-${key}`, value);
+    }
+    script.setAttribute("data-theme", giscusTheme());
+    host.append(script);
+  }
+
+  // Keep the comment iframe in sync with the site's light/dark toggle.
+  new MutationObserver(() => {
+    document
+      .querySelector<HTMLIFrameElement>("iframe.giscus-frame")
+      ?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: giscusTheme() } } },
+        GISCUS_ORIGIN
+      );
+  }).observe(document.documentElement, { attributeFilter: ["data-theme"] });
+
+  // Re-mount after client-side navigation between posts.
+  document.addEventListener("astro:page-load", mountComments);
+  mountComments();
+</script>
