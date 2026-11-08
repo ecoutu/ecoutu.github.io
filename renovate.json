@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":pinAllExceptPeerDependencies",
+    ":semanticCommits"
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "timezone": "America/Toronto",
+  "rangeStrategy": "pin",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "description": "Security fixes open right away, outside the weekly schedule",
+    "schedule": [
+      "at any time"
+    ]
+  },
+  "lockFileMaintenance": {
+    "description": "Refresh transitive dependencies (most Dependabot alerts are transitive dev tooling)",
+    "enabled": true,
+    "schedule": [
+      "before 6am on the first day of the month"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Low-risk dev tooling, grouped",
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "dev tooling (minor/patch)"
+    },
+    {
+      "description": "Astro and its integrations move together",
+      "matchPackageNames": [
+        "astro",
+        "@astrojs/**"
+      ],
+      "groupName": "astro"
+    },
+    {
+      "description": "GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    }
+  ]
+}
