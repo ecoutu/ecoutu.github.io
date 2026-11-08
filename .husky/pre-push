@@ -1,1 +1,16 @@
+# git passes "<local ref> <local sha> <remote ref> <remote sha>" per pushed ref: read it before npm can consume stdin.
+refs=$(cat)
+
+# Branch names (CLAUDE.md): <type>/<issue>[-suffix] or <type>/posts-<slug>. CI's pr-conventions check enforces it too.
+types='feat|fix|perf|refactor|test|docs|build|ci|chore|style|revert'
+bad=$(printf '%s\n' "$refs" | while read -r _lref _lsha rref _rsha; do
+  b=${rref#refs/heads/}
+  [ -z "$rref" ] || [ "$b" = "$rref" ] || [ "$b" = main ] && continue
+  printf '%s\n' "$b" | grep -qE "^($types)/([0-9]+(-[a-z0-9][a-z0-9._-]*)?|posts-[a-z0-9][a-z0-9-]*)$" || echo "$b"
+done)
+if [ -n "$bad" ]; then
+  echo "pre-push: branch must be <type>/<issue>[-suffix] or <type>/posts-<slug>: $bad" >&2
+  exit 1
+fi
+
 npm run lint && npm run format:check && npx astro check || exit 1

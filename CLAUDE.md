@@ -52,6 +52,9 @@ Work is tracked on the **Blog** project board (https://github.com/users/ecoutu/p
 - An issue is assigned to `ecoutu`, put on the matching milestone, and labelled: `bug` for fixes, `enhancement` for features, `post`, or `chore` / `ci` / `documentation` / `idea` as fits. When work starts, make sure it's assigned (`gh issue edit N --add-assignee ecoutu`).
 - The PR is assigned to `ecoutu` (`--assignee ecoutu`), has the same milestone, and links the issue in its body with `Closes #N`. Never write close/fix/resolve #N unless the PR should close it; use `Refs #N` otherwise.
 - **Branch names:** `<type>/<issue number>[-short-suffix]`, where the type matches the Conventional Commit type: `fix/12`, `feat/12-analytics`, `ci/8-project-board`. Post branches without an issue use `<type>/posts-<slug>`, for example `feat/posts-introducing-tabchef`.
+- These rules are enforced:
+  - The `pre-push` hook rejects a badly named branch.
+  - CI's `pr-conventions` check also requires the PR body to link the issue in the branch name, and a `posts-` branch to change only `src/content/posts/`, `src/assets/images/` or `public/media/`.
 - **Never rename a PR's head branch on GitHub.** That closes every open PR using it as its head. Name the branch right at creation; to rename later, open a new PR from a new branch and close the old one with a link.
 - Relationships:
   - A change that takes more than one PR gets a parent issue with one sub-issue per PR: `gh api -X POST repos/ecoutu/ecoutu.github.io/issues/<parent>/sub_issues -F sub_issue_id=<child .id>`.

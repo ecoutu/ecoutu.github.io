@@ -1,0 +1,60 @@
+name: PR conventions
+
+# Enforces CLAUDE.md's issue rules:
+# - the head branch is <type>/<issue>[-suffix], or <type>/posts-<slug> for a post;
+# - an issue branch's PR links that issue (Closes|Fixes|Resolves|Refs #<issue>), and the issue exists;
+# - a posts- branch only changes post content and media (posts need no issue).
+# Renovate, Dependabot and release branches are exempt.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  pr-conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the branch name, issue link and post-only changes
+        env:
+          # Passed via env, never interpolated into the script (injection).
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH: ${{ github.head_ref }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          types='feat|fix|perf|refactor|test|docs|build|ci|chore|style|revert'
+          if [[ "$BRANCH" =~ ^(renovate|dependabot)/ ]]; then echo "OK: bot branch $BRANCH is exempt"; exit 0; fi
+
+          if [[ "$BRANCH" =~ ^($types)/posts-[a-z0-9][a-z0-9-]*$ ]]; then
+            # Post content and media only: src/content/posts/, src/assets/images/, public/media/.
+            other=$(gh api --paginate "repos/$REPO/pulls/$NUMBER/files" --jq '.[].filename' \
+              | grep -vE '^(src/content/posts/|src/assets/images/|public/media/)' || true)
+            if [ -n "$other" ]; then
+              echo "::error::A posts- branch may only change post content and media. Open an issue and use <type>/<issue>[-suffix] for these files:"
+              echo "$other"
+              exit 1
+            fi
+            echo "OK: post branch $BRANCH (no issue needed)"; exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^($types)/([0-9]+)(-[a-z0-9][a-z0-9._-]*)?$ ]]; then
+            echo "::error::Branch '$BRANCH' must be <type>/<issue>[-suffix] (e.g. fix/12-og-image) or <type>/posts-<slug>, with a Conventional Commit type."
+            exit 1
+          fi
+          issue="${BASH_REMATCH[2]}"
+
+          if ! printf '%s' "$BODY" | grep -qiE "(close[sd]?|fix(e[sd])?|resolve[sd]?|refs?)[[:space:]]+#${issue}([^0-9]|$)"; then
+            echo "::error::The PR body must link issue #$issue from the branch name: 'Closes #$issue' (or 'Refs #$issue' when it should not close it)."
+            exit 1
+          fi
+          kind=$(gh api "repos/$REPO/issues/$issue" --jq 'if .pull_request then "pull request" else "issue" end' 2>/dev/null || echo missing)
+          if [ "$kind" != issue ]; then
+            echo "::error::#$issue from the branch name is not an issue in $REPO ($kind)."
+            exit 1
+          fi
+          echo "OK: $BRANCH links issue #$issue"
